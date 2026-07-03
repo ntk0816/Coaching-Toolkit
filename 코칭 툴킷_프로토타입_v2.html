@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>코칭 툴킷</title>
+    <style>
+        /* Apple SF 스타일 타이포그래피 및 미니멀 오프라인 최적화 */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.02em;
+        }
+        
+        /* 애플의 백색광 테마 - 화이트/블루만 사용하여 미니멀리즘 극대화 */
+        body { 
+            min-height: 100vh; 
+            padding: 24px 16px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background-color: #f5f5f7; /* Apple signature light gray */
+            color: #1d1d1f;
+        }
+        
+        /* 프리미엄 일체형 컨테이너 (글래스모피즘 테두리) */
+        .container { 
+            width: 100%; 
+            max-width: 720px; 
+            background: #ffffff; 
+            border-radius: 28px; 
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04); 
+            border: 1px solid rgba(0, 0, 0, 0.04); 
+            overflow: hidden; 
+            position: relative; 
+        }
+        
+        /* 헤더 영역 */
+        header { 
+            background: #ffffff; 
+            border-bottom: 1px solid #f5f5f7;
+            padding: 28px 24px 20px 24px; 
+            text-align: center; 
+        }
+        
+        header h1 { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: #1d1d1f;
+            letter-spacing: -0.03em;
+        }
+        
+        /* 메인 콘텐츠 */
+        main { 
+            padding: 24px; 
+            text-align: center; 
+            position: relative; 
+        }
+
+        /* [요청 반영] 코칭 툴킷 앱 사용 안내 목적 카드 - 순백색으로 변경 */
+        .app-purpose-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            text-align: left;
+            border: 1px solid #e8e8ed;
+        }
+
+        .purpose-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0071e3;
+            background: rgba(0, 113, 227, 0.08);
+            padding: 3px 8px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .purpose-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 6px;
+        }
+
+        .purpose-desc {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: #515154;
+        }
+
+        /* [요청 반영] 3대 핵심 메카니즘 로드맵 (순서가 느껴지게 반응형 화살표 포함) */
+        .roadmap-capsule-box {
+            display: flex;
+            background: #f5f5f7;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: 100px;
+            padding: 8px 16px;
+            margin-bottom: 24px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .roadmap-step {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #515154;
+            line-height: 1.3;
+        }
+
+        .roadmap-arrow {
+            color: #0071e3; /* 애플 스마트 블루 컬러 적용으로 가독성 확보 */
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+            user-select: none;
+            padding: 0 4px;
+        }
+
+        @media (max-width: 480px) {
+            .roadmap-capsule-box {
+                border-radius: 16px;
+                flex-direction: column;
+                padding: 12px;
+                gap: 8px;
+            }
+            .roadmap-arrow {
+                transform: rotate(90deg); /* 모바일 세로 모드일 때는 화살표를 아래 방향으로 회전 */
+                padding: 2px 0;
+            }
+        }
+
+        /* GROW 가이드 인포그래픽 보드 */
+        .guide-board-container {
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .guide-board-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 113, 227, 0.04);
+            border: 1px solid rgba(0, 113, 227, 0.08);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+
+        .guide-board-icon {
+            font-size: 18px;
+        }
+
+        .guide-board-desc {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+
+        .guide-board-desc strong {
+            color: #0071e3;
+        }
+
+        /* G-R-O-W 4개 컬럼 인포 보드 */
+        .quad-columns-grid {
+            display: grid;
+            grid-template-cols: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 580px) {
+            .quad-columns-grid {
+                grid-template-cols: 1fr 1fr;
+            }
+        }
+
+        .quad-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+        }
+
+        .quad-card:hover {
+            border-color: rgba(0, 113, 227, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .quad-card-header {
+            background: #0071e3; 
+            padding: 12px 14px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quad-initial {
+            font-size: 18px;
+            font-weight: 800;
+            background: rgba(255, 255, 255, 0.18);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #ffffff;
+        }
+
+        .quad-title-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quad-title-en {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .quad-title-ko {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+        }
+
+        .quad-card-body {
+            padding: 14px;
+            background: #ffffff;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quad-question-header {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #1d1d1f;
+            line-height: 1.4;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .quad-bullet-list {
+            list-style: none;
+            padding-left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .quad-bullet-list li {
+            font-size: 11px;
+            color: #515154;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .quad-bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #0071e3;
+            font-weight: bold;
+        }
+
+        /* 시간 수정 및 반영 섹션 */
+        .time-setting-container {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f5f5f7;
+            text-align: left;
+        }
+
+        .time-setting-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 6px;
+        }
+
+        .header-guide-text {
+            font-size: 12px; 
+            color: #86868b; 
+            margin-bottom: 16px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        /* 시간 조절 슬림 패널 */
+        .time-setting-grid { 
+            display: grid; 
+            grid-template-cols: repeat(5, 1fr); 
+            gap: 6px; 
+            margin-bottom: 12px; 
+        }
+        
+        .setting-box { 
+            background: #f5f5f7; 
+            padding: 10px 4px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            text-align: center; 
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .setting-box:focus-within {
+            border-color: #0071e3;
+            background: #ffffff;
+        }
+        
+        .setting-box span { 
+            display: block; 
+            font-weight: 600; 
+            color: #86868b;
+            margin-bottom: 4px; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .setting-box input { 
+            width: 34px; 
+            background: transparent; 
+            border: none; 
+            color: #1d1d1f; 
+            text-align: center; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            font-weight: 600;
+            font-family: -apple-system, monospace; 
+            padding: 2px 0; 
+            outline: none;
+        }
+        
+        .apply-btn { 
+            background: transparent; 
+            color: #0071e3; 
+            border: none; 
+            padding: 4px 0; 
+            font-size: 12px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: 0.2s; 
+            text-align: right;
+            width: 100%;
+        }
+        
+        .apply-btn:hover { 
+            text-decoration: underline;
+        }
+
+        /* 얇은 실버-그레이 피크셀 분리 가름선 */
+        .section-divider {
+            border: none;
+            border-top: 1px solid #e8e8ed;
+            margin: 32px 0;
+            width: 100%;
+        }
+
+        /* 실시간 타이머 작동 섹션 헤더 */
+        .session-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1d1d1f;
+            text-align: left;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* 캡슐형 인디케이터 바 */
+        .badge-container { 
+            display: flex; 
+            width: 100%;
+            gap: 4px; 
+            background: #f5f5f7; 
+            padding: 4px; 
+            border-radius: 100px; 
+            margin: 16px 0 12px 0; 
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        
+        .badge { 
+            flex: 1;
+            text-align: center;
+            padding: 8px 2px; 
+            font-size: 12px; 
+            font-weight: 500; 
+            color: #86868b; 
+            border-radius: 100px; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            white-space: nowrap;
+        }
+
+        .badge.active-badge { 
+            background: #ffffff; 
+            color: #0071e3; 
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+        
+        /* 수동 이동 컨트롤러 */
+        .skip-container {
+            margin-bottom: 16px;
+        }
+        
+        .btn-skip {
+            background: #f5f5f7;
+            border: none;
+            color: #0071e3;
+            padding: 8px 18px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .btn-skip:hover {
+            background: #e8e8ed;
+        }
+
+        /* 대형 타이머 서체 */
+        .timer-display { 
+            font-size: 80px; 
+            font-weight: 200; 
+            font-family: -apple-system, BlinkMacSystemFont, monospace; 
+            color: #1d1d1f; 
+            margin: 4px 0; 
+            letter-spacing: -3px; 
+            line-height: 1.05;
+        }
+        
+        /* 미니멀 알림 문구 */
+        .alert-zone { 
+            font-size: 12px; 
+            font-weight: 500; 
+            color: #ff3b30; 
+            height: 18px; 
+            margin-top: 4px; 
+            visibility: hidden; 
+        }
+        
+        .alert-zone.show { 
+            visibility: visible; 
+            animation: pulse 1.2s infinite; 
+        }
+        
+        /* 애플 미니멀 컨트롤 버튼 세트 */
+        .control-panel { 
+            display: flex; 
+            justify-content: center; 
+            gap: 8px; 
+            margin: 16px 0; 
+            flex-wrap: wrap;
+        }
+        
+        .btn { 
+            padding: 10px 22px; 
+            font-size: 13px; 
+            font-weight: 500; 
+            border-radius: 100px; 
+            border: none; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        
+        .btn-start { background: #0071e3; color: white; }
+        .btn-start:hover { background: #0077ed; }
+        .btn-pause { background: #86868b; color: white; display: none; }
+        .btn-pause:hover { background: #6e6e73; }
+        .btn-stop { background: #f5f5f7; color: #ff3b30; } 
+        .btn-stop:hover { background: #e8e8ed; }
+        .btn-reset { background: #f5f5f7; color: #1d1d1f; }
+        .btn-reset:hover { background: #e8e8ed; }
+        .btn:active { transform: scale(0.96); }
+        
+        /* 하단 툴셋 그리드 */
+        .tool-grid { 
+            display: grid; 
+            grid-template-cols: 1fr; 
+            gap: 12px; 
+            margin-top: 20px; 
+        }
+        
+        @media (min-width: 580px) {
+            .tool-grid {
+                grid-template-cols: 1.1fr 0.9fr;
+                gap: 16px;
+            }
+        }
+        
+        .tool-card { 
+            background: #ffffff; 
+            border: 1px solid rgba(0, 0, 0, 0.05); 
+            border-radius: 20px; 
+            padding: 18px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .tool-title { 
+            font-size: 12px; 
+            color: #86868b; 
+            font-weight: 500; 
+            margin-bottom: 12px; 
+        }
+        
+        .tool-btn { 
+            width: 100%; 
+            padding: 10px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            font-size: 12px; 
+            transition: 0.2s; 
+        }
+        
+        .btn-count { background: #f5f5f7; color: #0071e3; }
+        .btn-count:hover { background: #e8e8ed; }
+        .btn-random { background: #0071e3; color: white; }
+        .btn-random:hover { background: #0077ed; }
+        
+        .btn-list-trigger {
+            background: #ffffff;
+            color: #0071e3;
+            border: 1px solid rgba(0, 113, 227, 0.15);
+        }
+        .btn-list-trigger:hover {
+            background: rgba(0, 113, 227, 0.03);
+        }
+
+        .question-box { 
+            width: 100%; 
+            min-height: 80px; 
+            background: #f5f5f7; 
+            border-radius: 14px; 
+            padding: 14px; 
+            font-size: 12px; 
+            color: #1d1d1f; 
+            font-weight: 400; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            line-height: 1.5; 
+            text-align: center; 
+            margin-bottom: 10px;
+        }
+
+        /* 우측 상시 질문 기록 현황판 */
+        .status-panel {
+            width: 100%;
+            background: #f5f5f7;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .status-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #86868b;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #515154;
+            transition: all 0.2s;
+        }
+        
+        .status-row.active-row {
+            color: #0071e3;
+            font-weight: 600;
+        }
+
+        /* 반전형 오버레이 */
+        .overlay { 
+            position: absolute; 
+            inset: 0; 
+            background: #0071e3; 
+            z-index: 100; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            color: #ffffff; 
+            padding: 24px; 
+            display: none; 
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .overlay h2 { 
+            font-size: 26px; 
+            font-weight: 700; 
+            margin-bottom: 12px; 
+            color: #ffffff;
+        }
+        
+        .overlay p { 
+            font-size: 15px; 
+            margin-bottom: 28px; 
+            color: rgba(255, 255, 255, 0.9); 
+            line-height: 1.5; 
+            text-align: center;
+            max-width: 320px;
+        }
+        
+        .overlay-btn { 
+            background: #ffffff; 
+            color: #0071e3; 
+            border: none; 
+            padding: 14px 32px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            border-radius: 100px; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .overlay-btn:hover { 
+            background: #f5f5f7; 
+            transform: scale(1.02);
+        }
+        
+        /* 모달 전체창 */
+        .modal { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 200; 
+            padding: 16px; 
+            display: none; 
+        }
+        
+        .modal-content { 
+            background: #ffffff; 
+            width: 100%; 
+            max-width: 640px; 
+            max-height: 80vh; 
+            border-radius: 24px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); 
+        }
+        
+        .modal-header { 
+            background: #ffffff; 
+            border-bottom: 1px solid #f5f5f7;
+            color: #1d1d1f; 
+            padding: 18px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .modal-header h3 { 
+            font-size: 15px; 
+            font-weight: 600; 
+        }
+        
+        .modal-close { 
+            background: none; 
+            border: none; 
+            color: #86868b; 
+            font-size: 24px; 
+            cursor: pointer; 
+        }
+        
+        .modal-body { 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            text-align: left; 
+        }
+        
+        .modal-section-title { 
+            font-weight: 600; 
+            font-size: 13px; 
+            border-bottom: 1px solid #f5f5f7; 
+            padding-bottom: 6px; 
+            margin-bottom: 8px; 
+            color: #0071e3;
+        }
+        
+        .modal-list { 
+            padding-left: 18px; 
+            font-size: 13px; 
+            color: #515154; 
+            line-height: 1.5; 
+        }
+        
+        .modal-list li { 
+            margin-bottom: 6px; 
+        }
+        
+        .modal-footer { 
+            padding: 12px 20px; 
+            background: #f5f5f7; 
+            border-top: 1px solid rgba(0, 0, 0, 0.04); 
+            text-align: right; 
+        }
+
+        @keyframes pulse { 
+            0%, 100% { opacity: 1; } 
+            50% { opacity: 0.5; } 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 헤더 영역 -->
+        <header>
+            <h1 id="app-title">코칭 툴킷</h1>
+        </header>
+
+        <!-- 메인 작동 공간 -->
+        <main>
+            <!-- 단계 전환 파란색 반전 오버레이 -->
+            <div id="next-stage-overlay" class="overlay">
+                <h2 id="overlay-title">[Reality] 완료</h2>
+                <p id="overlay-ment">현재 단계를 마무리하고 다음 코칭 프로세스인 [Option] 단계로 이동할 시간입니다.</p>
+                <button onclick="closeOverlayAndNext()" class="overlay-btn">다음 단계 확인 및 진행</button>
+            </div>
+
+            <!-- [요청 반영] 코칭 툴킷 앱 사용 안내 목적 카드 - 순백색 테마의 깔끔한 설명 패널 -->
+            <div class="app-purpose-card">
+                <span class="purpose-badge">서비스 안내</span>
+                <h3 class="purpose-title">코칭 툴킷(Coaching Toolkit)이란?</h3>
+                <p class="purpose-desc">
+                    본 툴킷은 전문적이고 수평적인 대화를 이끌어내는 핵심 프레임워크인 <strong>GROW 모델</strong>을 실시간 대화 속에서 자연스럽게 실천할 수 있도록 설계된 전용 타이머 겸 가이드 도구입니다. 
+                    각 단계별 제한 시간을 효율적으로 관리하고 최적의 추천 질문을 던짐으로써 상대방이 주도적으로 해답을 찾고 의지를 다지도록 돕습니다.
+                </p>
+            </div>
+
+            <!-- GROW 모델에 대한 행동 가이드 인포그래픽 보드 -->
+            <div class="guide-board-container">
+                <div class="guide-board-header">
+                    <span class="guide-board-icon">💡</span>
+                    <!-- [요청 반영] GROW 모델이란? (대문자 수정 적용 완료) -->
+                    <div class="guide-board-desc">
+                        <strong>GROW 모델이란?</strong> 코칭과 문제 해결, 목표 달성을 위해 널리 사용되는 4단계 대화 프레임워크로, 상대방이 스스로 답을 찾고 행동하도록 돕습니다.
+                    </div>
+                </div>
+
+                <!-- [요청 반영] 순서가 느껴지게 깔끔한 화살표(➔)가 포함된 3대 핵심 메카니즘 로드맵 바 -->
+                <div class="roadmap-capsule-box">
+                    <div class="roadmap-step">성장 목표와 현재 수준 점검</div>
+                    <span class="roadmap-arrow">➔</span>
+                    <div class="roadmap-step">현시점에서 선택 가능한 옵션 파악</div>
+                    <span class="roadmap-arrow">➔</span>
+                    <div class="roadmap-step">성장을 위한 Next Step 정하기</div>
+                </div>
+
+                <!-- G-R-O-W 4컬럼 카드형 정보 매칭 보드 -->
+                <div class="quad-columns-grid">
+                    <!-- G Card -->
+                    <div class="quad-card">
+                        <div class="quad-card-header">
+                            <span class="quad-initial">G</span>
+                            <div class="quad-title-info">
+                                <span class="quad-title-en">Goal</span>
+                                <span class="quad-title-ko">(목표 확인)</span>
+                            </div>
+                        </div>
+                        <div class="quad-card-body">
+                            <div class="quad-question-header">달성하고자 하는 목표는 무엇인가? 목표는 무엇이었나?</div>
+                            <ul class="quad-bullet-list">
+                                <li>기대하는(했던) 목표나 결과를 구체화(정량적, 정성적)</li>
+                                <li>핵심 성과 지표 정의</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- R Card -->
+                    <div class="quad-card">
+                        <div class="quad-card-header">
+                            <span class="quad-initial">R</span>
+                            <div class="quad-title-info">
+                                <span class="quad-title-en">Reality(Result)</span>
+                                <span class="quad-title-ko">(현실/결과 점검)</span>
+                            </div>
+                        </div>
+                        <div class="quad-card-body">
+                            <div class="quad-question-header">현상황은 어떠한가?<br>(결과는 어떠한가?)</div>
+                            <ul class="quad-bullet-list">
+                                <li>목표 달성을 위해 그동안 어떤 일을 했는가?</li>
+                                <li>결과는 어떻게 되었는가? (긍정적, 부정적)</li>
+                                <li>이 목표를 이루는데 현실적인 어려움이 있다면?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- O Card -->
+                    <div class="quad-card">
+                        <div class="quad-card-header">
+                            <span class="quad-initial">O</span>
+                            <div class="quad-title-info">
+                                <span class="quad-title-en">Option(Origin)</span>
+                                <span class="quad-title-ko">(Gap 극복 방안 탐색)</span>
+                            </div>
+                        </div>
+                        <div class="quad-card-body">
+                            <div class="quad-question-header">대안은 무엇인가?<br>(Gap의 원인은 무엇이고 대안은?)</div>
+                            <ul class="quad-bullet-list">
+                                <li>목표 달성을 위해 할 수 있는 것은?</li>
+                                <li>지금까지 해본 것, 해보지 않은 것은?</li>
+                                <li>당신의 강점을 발휘해본다면?</li>
+                                <li>기대와의 차이 원인 분석 및 대안 찾기</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- W Card -->
+                    <div class="quad-card">
+                        <div class="quad-card-header">
+                            <span class="quad-initial">W</span>
+                            <div class="quad-title-info">
+                                <span class="quad-title-en">Will</span>
+                                <span class="quad-title-ko">(실행 점검, 장애요인 제거)</span>
+                            </div>
+                        </div>
+                        <div class="quad-card-body">
+                            <div class="quad-question-header">구체적으로 무엇을 어떻게 언제까지 해야 할 것인가?</div>
+                            <ul class="quad-bullet-list">
+                                <li>가장 효과적이고 유용하다 생각되는 계획은 무엇인가?</li>
+                                <li>무엇을 해야 할 것인가? (해야 할 일 vs 멈춰야 할 일)</li>
+                                <li>언제부터 언제까지 할 것인가? 확인 방법 구체화</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 코칭 단계별 시간 사전 설정 슬롯 (GROW 보드와 타이머 사이에 위치) -->
+            <div class="time-setting-container">
+                <h3 class="time-setting-title">코칭 단계별 시간 사전 설정하기</h3>
+                <p class="header-guide-text">시간을 수정한 후 '설정 시간 반영하기' 버튼을 누르면 타이머에 반영됩니다.</p>
+                <div class="time-setting-grid">
+                    <div class="setting-box">
+                        <span>G (목표)</span>
+                        <input type="number" id="input-G" value="10"> 분
+                    </div>
+                    <div class="setting-box">
+                        <span>R (현실)</span>
+                        <input type="number" id="input-R" value="15"> 분
+                    </div>
+                    <div class="setting-box">
+                        <span>O (대안)</span>
+                        <input type="number" id="input-O" value="25"> 분
+                    </div>
+                    <div class="setting-box">
+                        <span>W (의지)</span>
+                        <input type="number" id="input-W" value="10"> 분
+                    </div>
+                    <div class="setting-box">
+                        <span>☕ (휴식)</span>
+                        <input type="number" id="input-Rest" value="10"> 분
+                    </div>
+                </div>
+                <div>
+                    <button onclick="applyCustomTimes()" class="apply-btn">설정 시간 반영하기</button>
+                </div>
+            </div>
+
+            <!-- 얇은 실버 그라데이션 가름선 -->
+            <hr class="section-divider">
+
+            <!-- 코칭 진행 타이머 섹션 헤더 -->
+            <div class="session-section-title">코칭 진행 타이머</div>
+
+            <!-- [요청 반영 1] GROW 단계 표시 바 (원래 위치인 타이머 숫자 표기 영역 위쪽으로 복원 배치) -->
+            <div class="badge-container">
+                <span id="badge-G" class="badge">Goal</span>
+                <span id="badge-R" class="badge">Reality</span>
+                <span id="badge-O" class="badge">Option</span>
+                <span id="badge-W" class="badge">Will</span>
+                <span id="badge-Rest" class="badge">Rest</span>
+            </div>
+
+            <!-- [요청 반영 1] 다음 단계로 바로 이동 버튼 (단계 표시 바 바로 아래이자 타이머 숫자 위쪽) -->
+            <div class="skip-container">
+                <button onclick="manuallyNextStage()" class="btn-skip">다음 단계 바로 이동</button>
+            </div>
+
+            <!-- 타이머 디스플레이 공간 -->
+            <div>
+                <div id="timer-display" class="timer-display">10:00</div>
+                <p id="alert-zone" class="alert-zone">해당 단계 종료 1분 전입니다. 마무리를 준비하세요.</p>
+            </div>
+
+            <!-- 제어 스위치 패널 -->
+            <div class="control-panel">
+                <button id="btn-start" onclick="startTimer()" class="btn btn-start">시작</button>
+                <button id="btn-pause" onclick="pauseTimer()" class="btn btn-pause">일시정지</button>
+                <button id="btn-stop" onclick="stopTimer()" class="btn btn-stop">이번 단계 리셋</button>
+                <button id="btn-reset" onclick="resetTimer()" class="btn btn-reset">전체 리셋</button>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #f5f5f7; margin: 16px 0;">
+
+            <!-- 실시간 대화 인터랙션 도구 2칼럼 패널 -->
+            <div class="tool-grid">
+                <!-- 좌측: 추천 가이드 질문 추출기 및 질문 리스트 전체보기 버튼 통합 안착 -->
+                <div class="tool-card">
+                    <span class="tool-title">현재 단계 추천 질문</span>
+                    <div class="question-box" id="random-question-box">
+                        추천 질문 버튼을 누르시면 이 단계에 적절한 힌트 대화가 제공됩니다.
+                    </div>
+                    <button id="action-random-btn" onclick="pickRandomQuestion()" class="tool-btn btn-random" style="margin-bottom: 8px;">🎲 추천 질문 추출</button>
+                    <button onclick="toggleListModal(true)" class="tool-btn btn-list-trigger">⭐️모든 단계 질문 리스트 한눈에 보기⭐️</button>
+                </div>
+
+                <!-- 우측: 질문 횟수 카운터 및 누적 기록 대시보드 -->
+                <div class="tool-card">
+                    <button id="action-count-btn" onclick="countQuestion()" class="tool-btn btn-count" style="margin-bottom: 12px;">➕ 현재 단계 질문 카운트</button>
+                    <span class="tool-title" style="margin-bottom: 6px;">질문 횟수 누적 현황</span>
+                    <div class="status-panel">
+                        <div class="status-title">
+                            <span>GROW 단계</span>
+                            <span>누적 횟수</span>
+                        </div>
+                        <div class="status-row" id="row-G">
+                            <span>G (목표 설정)</span>
+                            <span id="record-G">0회</span>
+                        </div>
+                        <div class="status-row" id="row-R">
+                            <span>R (현실 파악)</span>
+                            <span id="record-R">0회</span>
+                        </div>
+                        <div class="status-row" id="row-O">
+                            <span>O (대안 탐색)</span>
+                            <span id="record-O">0회</span>
+                        </div>
+                        <div class="status-row" id="row-W">
+                            <span>W (실천 의지)</span>
+                            <span id="record-W">0회</span>
+                        </div>
+                        <div class="status-row" id="row-Rest" style="border-top: 1px solid rgba(0, 0, 0, 0.04); margin-top: 5px; padding-top: 5px;">
+                            <span>☕ Rest (휴식)</span>
+                            <span id="record-Rest">-</span>
+                        </div>
+                    </div>
+                    <!-- 카운팅 표시용 더미 컨테이너 -->
+                    <span id="counter-display" style="display: none;">0회</span>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- 리스트 팝업 모달창 -->
+    <div id="list-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 GROW 전체 질문 리스트 가이드북</h3>
+                <button onclick="toggleListModal(false)" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-list-body">
+                <!-- 자바스크립트 바인딩 스페이스 -->
+            </div>
+            <div class="modal-footer">
+                <button onclick="toggleListModal(false)" class="btn btn-reset" style="padding: 8px 16px; font-size:13px; border-radius: 12px;">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 핵심 비즈니스 로직 스크립트 -->
+    <script>
+        const questions = {
+            G: [
+                "오늘 코칭 대화를 통해 궁극적으로 얻고자 하는 결과는 무엇인가요?",
+                "이번 세션이 끝날 때 어떤 상태가 되기를 바라시나요?",
+                "지금 가장 해결하고 싶거나 이루고 싶은 명확한 목표는 무엇인가요?",
+                "그 목표가 달성되었다는 것을 어떻게 알 수 있을까요? (측정 기준)",
+                "목표를 달성했을 때의 모습을 상상하면 어떤 기분이 드시나요?",
+                "이 목표는 당신에게 왜 그토록 중요한가요?",
+                "이 목표를 달성하는 것이 당신의 삶이나 커리어에 어떤 의미가 있나요?",
+                "장기적으로 보았을 때, 이 목표는 어떤 큰 그림의 일부인가요?",
+                "구체적으로 언제까지 이 목표를 이루고 싶으신가요?",
+                "이 목표가 달성되면 주변 사람들에게는 어떤 긍정적인 변화가 생길까요?",
+                "당신이 진정으로 원하는 '성공'의 정의는 무엇인가요?",
+                "목표를 한 문장으로 명확하게 정리해 본다면 어떻게 표현할 수 있을까요?",
+                "이 목표를 이루기 위해 반드시 채워야 하는 핵심 요소는 무엇인가요?",
+                "오늘 대화에서 우리가 집중해야 할 가장 우선순위 높은 주제는 무엇인가요?",
+                "만약 모든 조건이 완벽하다면, 어떤 목표를 세우고 싶으신가요?",
+                "이 목표가 당신에게 적당한 도전감을 주나요, 아니면 다소 부담스러운가요?",
+                "목표 달성을 방해하지 않는 선에서, 스스로 타협할 수 있는 최소한의 기준은 무엇인가요?",
+                "이 목표를 향해 나아가게 만드는 당신 안의 가장 큰 동기부여는 무엇인가요?",
+                "이번 대화를 통해 어떤 구체적인 실행 계획의 단초를 얻고 싶으신가요?",
+                "우리가 오늘 설정한 이 목표가 진정으로 당신이 원하는 것이 맞나요?"
+            ],
+            R: [
+                "현재 상황에 대해 객관적으로 설명해 주시겠어요?",
+                "이 문제나 상황과 관련해 현재 어떤 일들이 일어나고 있나요?",
+                "지금까지 이 목표를 위해 시도해 본 행동은 무엇이 있나요?",
+                "그 시도들의 결과는 어땠고, 무엇을 배우셨나요?",
+                "현재 상황에서 가장 만족스러운 부분과 그렇지 못한 부분은 무엇인가요?",
+                "이 상황에 영향을 미치고 있는 주요 인물이나 환경은 누구/무엇인가요?",
+                "목표와 현재 상태 사이의 가장 큰 간격(Gap)은 무엇이라고 생각하시나요?",
+                "상황을 더 어렵게 만드는 내부적 요인(예: 두려움, 고정관념)은 무엇인가요?",
+                "상황을 제약하는 외부적 걸림돌(예: 시간, 비용, 자원)은 무엇이 있나요?",
+                "이 문제가 당신의 일상이나 업무에 얼마나 큰 영향을 미치고 있나요?",
+                "현재 당신이 통제할 수 있는 부분과 통제할 수 없는 부분은 어떻게 나뉘나요?",
+                "이 상황에 대해 주변 사람들은 당신에게 어떤 피드백을 주나요?",
+                "당신이 가진 강점이나 핵심 역량 중 이 상황에 도움이 될 만한 것은 무엇인가요?",
+                "이미 활용하고 있거나 바로 활용 가능한 자원(인맥, 도구 등)은 무엇이 있나요?",
+                "과거에 이와 유사한 어려움을 극복했던 경험이 있나요?",
+                "그때는 어떻게 문제를 해결하셨나요?",
+                "현재 상황을 1~10점(10점이 목표 달성)으로 점수를 매긴다면 몇 점인가요?",
+                "그 점수를 준 이유는 무엇이며, 왜 더 낮은 점수가 아닌가요?",
+                "이 상황을 유지함으로써 얻는 숨겨진 이익(익숙함, 안주 등)이 혹시 있을까요?",
+                "현재 상황을 바라보는 당신의 핵심 감정은 무엇인가요?",
+                "어떤 점이 당신을 가장 답답하게 만들거나 멈칫하게 만드나요?",
+                "이 상황을 객관적인 제3자의 시선에서 바라본다면 어떻게 보일까요?",
+                "지금 당장 멈춰야 할 비효율적인 행동이나 습관은 무엇인가요?",
+                "지금 당신이 직면하기를 두려워하는 불편한 진실이 있나요?",
+                "현실을 바꾸기 위해 당신이 놓치고 있는 중요한 정보나 데이터가 있을까요?",
+                "이 상황을 해결하기 위해 당신에게 가장 부족한 자원은 무엇인가요?",
+                "현재 당신의 에너지 수준이나 스트레스 정도는 어느 정도인가요?",
+                "일의 우선순위에서 이 문제가 몇 번째에 위치하고 있나요?",
+                "지금까지의 상황을 종합해 볼 때, 핵심 원인은 한마디로 무엇인가요?",
+                "현실을 있는 그대로 인정했을 때, 지금 가장 먼저 받아들여야 할 점은 무엇인가요?"
+            ],
+            O: [
+                "이 상황을 해결하기 위해 시도해 볼 수 있는 방법에는 어떤 것들이 있을까요?",
+                "제약 조건(시간, 비용 등)이 전혀 없다면 무엇을 해보고 싶으신가요?",
+                "만약 당신이 이 분야의 최고 전문가라면 어떤 조언을 스스로에게 해줄까요?",
+                "당신이 가장 존경하거나 멘토로 생각하는 사람이라면 이 상황에서 어떻게 행동했을까요?",
+                "가장 쉽고 빠르게 시작할 수 있는 방법은 무엇인가요?",
+                "반대로 가장 대담하고 도전적인 해결책은 무엇인가요?",
+                "돈이나 시간이 전혀 들지 않는 대안이 있다면 무엇일까요?",
+                "현재 생각하신 대안 외에 전혀 다른 각도에서 접근할 수 있는 방법은 없을까요?",
+                "과거의 성공 경험을 바탕으로 적용해 볼 수 있는 아이디어가 있나요?",
+                "주변 사람들의 도움을 받는다면 어떤 옵션이 가능해질까요?",
+                "어떤 부분을 외주를 주거나 타인에게 위임할 수 있을까요?",
+                "목표를 아주 작게 쪼개어 본다면, 첫 번째 단계로 무엇을 할 수 있을까요?",
+                "시도해 볼 수 있는 아이디어를 브레인스토밍하듯 5 가지만 더 내볼까요?",
+                "첫 번째 대안이 실패했을 때를 대비한 플랜 B(예비책)는 무엇인가요?",
+                "지금 당장 인터넷이나 책에서 찾아볼 수 있는 힌트는 무엇이 있을까요?",
+                "기존의 방식을 완전히 뒤집어 생각해보면 어떤 해결책이 나올까요?",
+                "이 문제를 해결하기 위해 새롭게 배워야 하거나 익혀야 할 기술이 있나요?",
+                "나열하신 옵션들의 각각의 장점(Plus)은 무엇인가요?",
+                "반대로 각각의 옵션이 가진 단점이나 리스크(Minus)는 무엇인가요?",
+                "리스크를 최소화하면서 실행할 수 있는 절충안은 무엇이 있을까요?",
+                "지금 생각한 대안들 중 가장 흥미롭고 재미있어 보이는 것은 무엇인가요?",
+                "가장 적은 노력으로 가장 큰 효과를 낼 수 있는 묘안은 무엇인가요?",
+                "이 상황을 해결하기 위해 '하지 말아야 할 행동' 리스트를 만든다면 무엇을 적으시겠어요?",
+                "다른 부서나 다른 업계에서는 이와 같은 문제를 어떻게 해결하나요?",
+                "혼자 해결하는 것과 함께 해결하는 것 중 어느 쪽이 더 효과적일까요?",
+                "어떤 옵션이 당신의 가치관이나 신념과 가장 잘 부합하나요?",
+                "환경이나 시스템을 바꾸어 해결할 수 있는 방법은 무엇인가요?",
+                "지금 떠오른 아이디어 중 즉시 실행에 옮길 수 있는 일은 무엇인가요?",
+                "이 대안들을 실행했을 때 당신이 얻게 될 가장 큰 수확은 무엇인가요?",
+                "이야기 나눈 대안들을 몇 가지 카테고리로 묶어본다면 어떻게 분류할 수 있을까요?"
+            ],
+            W: [
+                "나열된 대안들 중 오늘 구체적으로 실행하기로 선택한 아이디어는 무엇인가요?",
+                "그 행동을 실행하기 위해 '첫 번째 조치'로 무엇을, 언제 하실 건가요?",
+                "이번 주 내에 반드시 완료할 구체적인 행동 행동 계획은 무엇인가요?",
+                "선택한 실행 계획을 완수할 확률을 1~100%로 표현한다면 몇 %인가요?",
+                "그 확률을 10% 더 높이기 위해 지금 무엇을 보완하면 좋을까요?",
+                "이 계획을 실행하는 과정에서 예상되는 가장 큰 장애물은 무엇인가요?",
+                "그 장애물이 실제로 나타났을 때 어떻게 대처(극복)하실 건가요?",
+                "이 계획을 실행하는 데 필요한 지원이나 자원을 어떻게 확보하실 건가요?",
+                "누구에게 당신의 실행 계획을 공유하고 지지를 부탁하고 싶으신가요?",
+                "목표 달성을 지속하기 위해 스스로에게 어떤 보상이나 격려를 해주실 건가요?",
+                "진행 상황을 스스로 점검하기 위해 어떤 모니터링 방법을 사용하실 건가요?",
+                "다음 코칭 세션 전까지 저(코치)에게 어떤 내용을 피드백해 주시겠습니까?",
+                "실행을 미루고 싶어지는 순간이 오면 스스로에게 어떤 말을 해주고 싶으신가요?",
+                "이 실천이 당신의 습관으로 자리 잡기 위해 일상 루틴에 어떻게 녹여낼 수 있을까요?",
+                "지금 세운 실행 계획이 진정으로 마음에서 우러나와 하고 싶은 일인가요?",
+                "실행 계획을 달성하기 위해 오늘 당장 예약하거나 캘린더에 등록해야 할 일정은 무엇인가요?",
+                "약속한 행동을 하지 못했을 때, 스스로 책임을 지기 위한 장치가 있나요?",
+                "이 실천을 통해 당신이 기대하는 즉각적인 변화는 무엇인가요?",
+                "결심을 확고히 하기 위해, 저와 나눈 실행 약속을 한 문장으로 선언해 주시겠어요?",
+                "자, 이제 언제부터 시작하시겠습니까?"
+            ],
+            Rest: [
+                "잠시 무거운 생각을 내려놓고 머리를 비워 볼까요?",
+                "지금까지 도출된 의미 있는 방향성을 찬찬히 돌아보며 호흡을 가다듬으세요.",
+                "따뜻한 물 한 잔을 나누며, 다음 세션을 위한 긴장감을 풀어내 봅니다.",
+                "여기까지 온 스스로를 격려하며 편안하게 몸과 뇌에 휴식 시간을 제공합니다."
+            ]
+        };
+
+        let stages = [
+            { key: 'G', name: 'Goal', duration: 10 * 60, current: 10 * 60, badgeId: 'badge-G' },
+            { key: 'R', name: 'Reality', duration: 15 * 60, current: 15 * 60, badgeId: 'badge-R' },
+            { key: 'O', name: 'Option', duration: 25 * 60, current: 25 * 60, badgeId: 'badge-O' },
+            { key: 'W', name: 'Will', duration: 10 * 60, current: 10 * 60, badgeId: 'badge-W' },
+            { key: 'Rest', name: 'Rest', duration: 10 * 60, current: 10 * 60, badgeId: 'badge-Rest' }
+        ];
+
+        let currentStageIdx = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let questionCounts = { G: 0, R: 0, O: 0, W: 0, Rest: 0 };
+        let warningTriggered = false;
+
+        function updateDisplay() {
+            const stage = stages[currentStageIdx];
+            const minutes = Math.floor(stage.current / 60);
+            const seconds = stage.current % 60;
+            
+            // 1. 타이머 디스플레이
+            document.getElementById('timer-display').innerText = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // 2. 상단 캡슐 바 활성화 상태 렌더링
+            stages.forEach((st, idx) => {
+                const el = document.getElementById(st.badgeId);
+                const row = document.getElementById(`row-${st.key}`);
+                
+                if(idx === currentStageIdx) {
+                    el.className = "badge active-badge"; 
+                    if(row) row.classList.add('active-row');
+                } else {
+                    el.className = "badge";
+                    if(row) row.classList.remove('active-row');
+                }
+            });
+
+            // 3. 우측 현황판 질문 횟수 누적 동기화
+            document.getElementById('record-G').innerText = `${questionCounts.G}회`;
+            document.getElementById('record-R').innerText = `${questionCounts.R}회`;
+            document.getElementById('record-O').innerText = `${questionCounts.O}회`;
+            document.getElementById('record-W').innerText = `${questionCounts.W}회`;
+
+            // 4. 왼쪽 질문 카운터 카드 내 숫자 실시간 갱신
+            const countBtn = document.getElementById('action-count-btn');
+            if (stage.key === 'Rest') {
+                document.getElementById('counter-display').innerText = "-";
+                countBtn.innerText = "☕ 휴식 중 카운트 비활성";
+                countBtn.disabled = true;
+                countBtn.style.opacity = 0.5;
+            } else {
+                document.getElementById('counter-display').innerText = `${questionCounts[stage.key]}회`;
+                countBtn.innerText = "➕ 현재 단계 질문 카운트";
+                countBtn.disabled = false;
+                countBtn.style.opacity = 1;
+            }
+        }
+
+        function applyCustomTimes() {
+            if (isRunning) pauseTimer();
+            
+            const gM = parseInt(document.getElementById('input-G').value) || 0;
+            const rM = parseInt(document.getElementById('input-R').value) || 0;
+            const oM = parseInt(document.getElementById('input-O').value) || 0;
+            const wM = parseInt(document.getElementById('input-W').value) || 0;
+            const restM = parseInt(document.getElementById('input-Rest').value) || 0;
+
+            stages[0].duration = stages[0].current = gM * 60;
+            stages[1].duration = stages[1].current = rM * 60;
+            stages[2].duration = stages[2].current = oM * 60;
+            stages[3].duration = stages[3].current = wM * 60;
+            stages[4].duration = stages[4].current = restM * 60;
+
+            currentStageIdx = 0;
+            warningTriggered = false;
+            document.getElementById('alert-zone').classList.remove('show');
+            updateDisplay();
+            document.getElementById('random-question-box').innerText = "세션 시간이 업데이트되었습니다. 시작을 눌러 진행해 주세요.";
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('btn-pause').style.display = 'inline-block';
+
+            timerInterval = setInterval(() => {
+                const stage = stages[currentStageIdx];
+                
+                if (stage.current > 0) {
+                    stage.current--;
+                    
+                    if (stage.current === 60 && !warningTriggered) {
+                        warningTriggered = true;
+                        document.getElementById('alert-zone').classList.add('show');
+                        playBeepSound('warning');
+                    }
+                    updateDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    playBeepSound('end');
+                    showBlueOverlay();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            document.getElementById('btn-start').style.display = 'inline-block';
+            document.getElementById('btn-pause').style.display = 'none';
+        }
+
+        function stopTimer() {
+            pauseTimer();
+            warningTriggered = false;
+            document.getElementById('alert-zone').classList.remove('show');
+            
+            const stage = stages[currentStageIdx];
+            stage.current = stage.duration;
+            updateDisplay();
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            warningTriggered = false;
+            document.getElementById('alert-zone').classList.remove('show');
+            questionCounts = { G: 0, R: 0, O: 0, W: 0, Rest: 0 };
+            stages.forEach(st => st.current = st.duration);
+            currentStageIdx = 0;
+            updateDisplay();
+            document.getElementById('random-question-box').innerText = "모든 세션 데이터가 완전히 재설정되었습니다.";
+        }
+
+        function manuallyNextStage() {
+            pauseTimer();
+            warningTriggered = false;
+            document.getElementById('alert-zone').classList.remove('show');
+            showBlueOverlay();
+        }
+
+        function showBlueOverlay() {
+            const currentStage = stages[currentStageIdx];
+            const nextStage = stages[currentStageIdx + 1];
+            
+            document.getElementById('overlay-title').innerText = `[${currentStage.name}] 단계 완료`;
+            
+            if (nextStage) {
+                if (nextStage.key === 'Rest') {
+                    document.getElementById('overlay-ment').innerText = `성공적으로 GROW 전 단계가 완료되었습니다.\n다음 단계는 편안히 갈무리하는 [${nextStage.name} (휴식)] 단계입니다.`;
+                } else {
+                    document.getElementById('overlay-ment').innerText = `현재 단계를 마무리하고 다음 코칭 프로세스인 [${nextStage.name}] 단계로 이동할 시간입니다.`;
+                }
+            } else {
+                document.getElementById('overlay-title').innerText = `코칭 완료`;
+                document.getElementById('overlay-ment').innerText = "축하합니다! GROW 과정과 힐링 휴식까지 계획된 전체 코칭 프로세스가 완료되었습니다.";
+            }
+            
+            document.getElementById('next-stage-overlay').style.display = 'flex';
+        }
+
+        function closeOverlayAndNext() {
+            document.getElementById('next-stage-overlay').style.display = 'none';
+            document.getElementById('alert-zone').classList.remove('show');
+            warningTriggered = false;
+
+            if (currentStageIdx < stages.length - 1) {
+                currentStageIdx++;
+                updateDisplay();
+                document.getElementById('random-question-box').innerText = "새 단계가 활성화되었습니다. 질문 추천 버튼을 눌러보세요.";
+                
+                isRunning = false; 
+                clearInterval(timerInterval); 
+                startTimer(); 
+            } else {
+                resetTimer();
+            }
+        }
+
+        function countQuestion() {
+            const currentKey = stages[currentStageIdx].key;
+            if (currentKey !== 'Rest') {
+                questionCounts[currentKey]++;
+                updateDisplay();
+            }
+        }
+
+        function pickRandomQuestion() {
+            const currentKey = stages[currentStageIdx].key;
+            const pool = questions[currentKey];
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            document.getElementById('random-question-box').innerText = `${pool[randomIndex]}`;
+        }
+
+        function toggleListModal(isOpen) {
+            const modal = document.getElementById('list-modal');
+            if (isOpen) {
+                let html = '';
+                const keys = ['G', 'R', 'O', 'W', 'Rest'];
+                const textTitle = { G: 'Goal (목표 정하기)', R: 'Reality (현실 파악하기)', O: 'Option (대안 탐색하기)', W: 'Will (실천 의지 확인하기)', Rest: '☕ Rest (마음 챙김 휴식)' };
+
+                keys.forEach(k => {
+                    html += `<div>
+                        <div class="modal-section-title">${textTitle[k]} (${questions[k].length}개)</div>
+                        <ol class="modal-list">
+                            ${questions[k].map(q => `<li>${q}</li>`).join('')}
+                        </ol>
+                    </div>`;
+                });
+                document.getElementById('modal-list-body').innerHTML = html;
+                modal.style.display = 'flex';
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+
+        function playBeepSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'warning') {
+                    osc.type = 'sine'; osc.frequency.value = 900;
+                    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.1);
+                    setTimeout(() => {
+                        const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+                        o2.connect(g2); g2.connect(ctx.destination);
+                        o2.type = 'sine'; o2.frequency.value = 900;
+                        g2.gain.setValueAtTime(0.04, ctx.currentTime);
+                        o2.start(); o2.stop(ctx.currentTime + 0.1);
+                    }, 180);
+                } else if (type === 'end') {
+                    osc.type = 'sine'; osc.frequency.value = 523.25; 
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.3);
+                }
+            } catch (err) { console.log("사운드 에러 우회 처리"); }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
